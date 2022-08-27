@@ -11,5 +11,5 @@ public final class ErrorCode {
     public static final String VALID_EMAIL_IS_REQUIRED = "A valid email is required";
     public static final String EMAIL_IN_USE = "Email in use";
     public static final String SHORT_PASSWORD = "Password must be at least 6 characters long" ;
-    public static final String DELETED_STATUS = "Cannot perform this action where status is DELETED";
+    public static final String DELETED_STATUS = "This action cannot be performed, this user has DELETED status.";
 }

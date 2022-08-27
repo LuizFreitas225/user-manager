@@ -28,7 +28,7 @@ public class UserService {
         log.info("UserService.create - start - input  [{}]", createUserDto.getEmail());
 
         User user = modelMapper.map(createUserDto, User.class);
-        validateUser(user);
+        validateCreateUser(user);
         User userCreated = userRepository.save(user);
 
         log.info("UserService.create - end- output [{}]", createUserDto.getEmail());
@@ -61,14 +61,14 @@ public class UserService {
         User user = modelMapper.map(editUserDto, User.class);
         User currentUser = findAndValidateById(user.getId());
         user.setCreateDate(currentUser.getCreateDate());
-        validateUser(user);
+        validateEditUser(currentUser, user);
         User userCreated = userRepository.save(user);
 
         log.info("UserService.replace - end- output [{},{}]", userCreated.getEmail(),userCreated.getId());
         return userCreated;
     }
 
-    public void validateUser(User user ){
+    public void validateCreateUser(User user ){
         log.info("UserService.validateUser - start - input [{}]", user.getEmail());
         if(emailInUse(user.getEmail())){
             throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
@@ -76,16 +76,32 @@ public class UserService {
         if(!passwordIsValid(user.getPassword())){
             throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
         }
-        if(user.getStatus() == Status.DELETED){
+        if(validateDeletedUser(user)){
             throw  new BadRequestException(ErrorCode.DELETED_STATUS );
         }
     }
+    public void validateEditUser(User currentUser, User newUser ){
+        log.info("UserService.validateUser - start - input [{}]", currentUser.getEmail(),newUser.getEmail());
+        if( ! currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())){
+            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
+        }
+        if( ! currentUser.getPassword().equals(newUser.getPassword()) && ! passwordIsValid(newUser.getPassword())){
+            throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
+        }
+        if(validateDeletedUser(currentUser)){
+            throw  new BadRequestException(ErrorCode.DELETED_STATUS );
+        }
+    }
+    public boolean validateDeletedUser (User user){
+        return (user.getStatus() == Status.DELETED);
+    }
+
     public boolean emailInUse(final String email) {
         return  userRepository.findByEmail(email).isPresent();
     }
 
     public boolean passwordIsValid(final String password) {
-        return  password.length() >= 6 ? true : false;
+        return  password.length() >= 6;
     }
 
 
