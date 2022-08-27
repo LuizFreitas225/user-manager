@@ -20,8 +20,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ExceptionDetails> badRequestHandler(BadRequestException badRequestException) {
         return new ResponseEntity<>(ExceptionDetails.builder()
                 .message(badRequestException.getMessage())
-                .title(badRequestException.getCause().getMessage())
                 .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
                 .build()
                 , HttpStatus.BAD_REQUEST);
 
@@ -33,12 +33,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
             request.setAttribute("javax.servlet.error.exception", ex, 0);
         }
-
         ExceptionDetails exceptionDetails = ExceptionDetails.builder()
                 .timestamp(LocalDateTime.now())
                 .status((status.value()))
-                .title((ex.getCause().getMessage()))
-                .message(ex.getClass().getName())
+                .message(ex.getMessage())
                 .build();
 
         return new ResponseEntity<>(exceptionDetails, headers, status);
