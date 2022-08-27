@@ -1,7 +1,7 @@
-package br.com.atech.usermanager.api.dto;
+package br.com.atech.usermanager.dto;
 
 import br.com.atech.usermanager.constant.ErrorCode;
-import br.com.atech.usermanager.domain.model.Status;
+import br.com.atech.usermanager.model.Status;
 import lombok.Data;
 
 import javax.persistence.EnumType;
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class EditUserDto {
-    @NotNull( message =  ErrorCode.ID_IS_MANDATORY)
+    @NotNull(message =  ErrorCode.ID_IS_MANDATORY)
     private Long id;
     @NotBlank(message = ErrorCode.NAME_IS_MANDATORY)
     private String name;

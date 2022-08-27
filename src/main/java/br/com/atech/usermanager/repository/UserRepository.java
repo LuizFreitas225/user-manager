@@ -1,18 +1,15 @@
-package br.com.atech.usermanager.domain.repository;
+package br.com.atech.usermanager.repository;
 
-import br.com.atech.usermanager.domain.model.User;
+import br.com.atech.usermanager.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
-import java.util.Optional;
-
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+    Boolean existsByEmail(String email);
 
     @Query(value = " SELECT p FROM User p "
             + " WHERE LOWER (p.name ) LIKE %:searchTerm% "

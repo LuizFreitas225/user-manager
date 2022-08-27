@@ -1,4 +1,4 @@
-package br.com.atech.usermanager.domain.model;
+package br.com.atech.usermanager.model;
 
 
 import lombok.Data;
@@ -12,9 +12,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "enjoyer")
 @Data
-public class User extends DefaultEntity{
+public class User extends DefaultEntity {
     private String name;
-    @Column(unique=true)
+    @Column(unique = true)
     private String email;
     private String password;
     private String userName;
