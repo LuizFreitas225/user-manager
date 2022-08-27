@@ -1,6 +1,7 @@
 package br.com.atech.usermanager.api.controller;
 
 import br.com.atech.usermanager.api.dto.CreateUserDto;
+import br.com.atech.usermanager.api.dto.EditUserDto;
 import br.com.atech.usermanager.api.dto.UserProfileDto;
 import br.com.atech.usermanager.domain.model.User;
 import br.com.atech.usermanager.service.UserService;
@@ -37,4 +38,20 @@ public class UserController {
         return  new ResponseEntity<>(modelMapper.map(userService.findAndValidateById(id) , UserProfileDto.class),
                 HttpStatus.OK);
     }
+    @DeleteMapping( "/{id}")
+    public ResponseEntity delete(@PathVariable(value = "id") long id){
+        log.info("UserController.getUserProfileById - start - input  [{}]", id );
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping
+    public ResponseEntity<UserProfileDto> edit(@RequestBody @Valid EditUserDto editUserDto) {
+        log.info("UserController.edit - start - input  [{},{}]", editUserDto.getEmail(),editUserDto.getId());
+
+        User userCreated = userService.replace(editUserDto);
+
+        log.info("ProductController.edit - end - outPut  [{},{}]", userCreated.getEmail(), userCreated.getId());
+        return new ResponseEntity<>(modelMapper.map(userCreated, UserProfileDto.class), HttpStatus.OK);
+    }
+
 }

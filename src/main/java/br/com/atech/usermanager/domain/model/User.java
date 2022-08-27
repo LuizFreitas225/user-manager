@@ -19,6 +19,6 @@ public class User extends DefaultEntity{
     private String password;
     private String userName;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
 }

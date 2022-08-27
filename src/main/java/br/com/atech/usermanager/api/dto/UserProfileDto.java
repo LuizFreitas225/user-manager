@@ -1,7 +1,6 @@
 package br.com.atech.usermanager.api.dto;
 
 import lombok.Data;
-import lombok.Getter;
 
 
 @Data

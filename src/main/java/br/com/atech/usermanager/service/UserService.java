@@ -1,7 +1,9 @@
 package br.com.atech.usermanager.service;
 
 import br.com.atech.usermanager.api.dto.CreateUserDto;
+import br.com.atech.usermanager.api.dto.EditUserDto;
 import br.com.atech.usermanager.constant.ErrorCode;
+import br.com.atech.usermanager.domain.model.Status;
 import br.com.atech.usermanager.domain.model.User;
 import br.com.atech.usermanager.domain.repository.UserRepository;
 import br.com.atech.usermanager.exception.BadRequestException;
@@ -25,10 +27,8 @@ public class UserService {
     public User create(final CreateUserDto createUserDto) {
         log.info("UserService.create - start - input  [{}]", createUserDto.getEmail());
 
-        if(emailInUse(createUserDto.getEmail())){
-            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
-        }
         User user = modelMapper.map(createUserDto, User.class);
+        validateUser(user);
         User userCreated = userRepository.save(user);
 
         log.info("UserService.create - end- output [{}]", createUserDto.getEmail());
@@ -45,9 +45,44 @@ public class UserService {
         return userFound;
     }
 
+    @Transactional
+    public void delete(final long id) {
+        log.info("UserService.findAndValidateById - start - input [{}]", id);
+
+        User userFound = findAndValidateById(id);
+        userFound.setStatus(Status.DELETED);
+        userRepository.save(userFound);
+    }
+
+    @Transactional
+    public User replace(final EditUserDto editUserDto) {
+        log.info("UserService.replace - start - input  [{},{}]", editUserDto.getEmail(), editUserDto.getId());
+
+        User user = modelMapper.map(editUserDto, User.class);
+        User currentUser = findAndValidateById(user.getId());
+        user.setCreateDate(currentUser.getCreateDate());
+        validateUser(user);
+        User userCreated = userRepository.save(user);
+
+        log.info("UserService.replace - end- output [{},{}]", userCreated.getEmail(),userCreated.getId());
+        return userCreated;
+    }
+
+    public void validateUser(User user ){
+        log.info("UserService.validateUser - start - input [{}]", user.getEmail());
+        if(emailInUse(user.getEmail())){
+            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
+        }
+        if(!passwordIsValid(user.getPassword())){
+            throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
+        }
+    }
     public boolean emailInUse(final String email) {
-        log.info("UserService.emailInUse - start - input [{}]", email);
         return  userRepository.findByEmail(email).isPresent();
+    }
+
+    public boolean passwordIsValid(final String password) {
+        return  password.length() >= 6 ? true : false;
     }
 
 
