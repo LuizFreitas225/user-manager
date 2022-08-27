@@ -1,11 +1,11 @@
 package br.com.atech.usermanager.service;
 
-import br.com.atech.usermanager.api.dto.CreateUserDto;
-import br.com.atech.usermanager.api.dto.EditUserDto;
+import br.com.atech.usermanager.dto.CreateUserDto;
+import br.com.atech.usermanager.dto.EditUserDto;
 import br.com.atech.usermanager.constant.ErrorCode;
-import br.com.atech.usermanager.domain.model.Status;
-import br.com.atech.usermanager.domain.model.User;
-import br.com.atech.usermanager.domain.repository.UserRepository;
+import br.com.atech.usermanager.model.Status;
+import br.com.atech.usermanager.model.User;
+import br.com.atech.usermanager.repository.UserRepository;
 import br.com.atech.usermanager.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.awt.print.Pageable;
 
 @Slf4j
 @Service
@@ -25,6 +24,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
+
+    private static final int MAX_PASSWORD_SIZE_ALLOWED = 6;
 
     @Transactional
     public User create(final CreateUserDto createUserDto) {
@@ -67,7 +68,7 @@ public class UserService {
         validateEditUser(currentUser, user);
         User userCreated = userRepository.save(user);
 
-        log.info("UserService.replace - end- output [{},{}]", userCreated.getEmail(),userCreated.getId());
+        log.info("UserService.replace - end- output [{},{}]", userCreated.getEmail(), userCreated.getId());
         return userCreated;
     }
 
@@ -78,43 +79,41 @@ public class UserService {
         return userPage;
     }
 
-    public void validateCreateUser(User user ){
+    public void validateCreateUser(User user) {
         log.info("UserService.validateUser - start - input [{}]", user.getEmail());
-        if(validateDeletedUser(user)){
-            throw  new BadRequestException(ErrorCode.DELETED_STATUS );
+        if (validateDeletedUser(user)) {
+            throw new BadRequestException(ErrorCode.DELETED_STATUS);
         }
-        if(emailInUse(user.getEmail())){
-            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
+        if (emailInUse(user.getEmail())) {
+            throw new BadRequestException(ErrorCode.EMAIL_IN_USE);
         }
-        if(!passwordIsValid(user.getPassword())){
-            throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
-        }
-    }
-    public void validateEditUser(User currentUser, User newUser ){
-        log.info("UserService.validateEditUser - start - input [{}]", currentUser.getEmail(),newUser.getEmail());
-        if(validateDeletedUser(currentUser)){
-            throw  new BadRequestException(ErrorCode.DELETED_STATUS );
-        }
-
-        if(! passwordIsValid(newUser.getPassword())){
-            throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
-        }
-
-        if( ! currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())){
-            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
+        if (!passwordIsValid(user.getPassword())) {
+            throw new BadRequestException(ErrorCode.SHORT_PASSWORD);
         }
     }
-    public boolean validateDeletedUser (User user){
+    public void validateEditUser(User currentUser, User newUser) {
+        log.info("UserService.validateEditUser - start - input [{}]", currentUser.getEmail(), newUser.getEmail());
+        if (validateDeletedUser(currentUser)) {
+            throw new BadRequestException(ErrorCode.DELETED_STATUS);
+        }
+
+        if (!passwordIsValid(newUser.getPassword())) {
+            throw new BadRequestException(ErrorCode.SHORT_PASSWORD);
+        }
+
+        if (!currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())) {
+            throw new BadRequestException(ErrorCode.EMAIL_IN_USE);
+        }
+    }
+    public boolean validateDeletedUser(User user) {
         return (user.getStatus() == Status.DELETED);
     }
 
     public boolean emailInUse(final String email) {
-        return  userRepository.findByEmail(email).isPresent();
+        return  userRepository.existsByEmail(email);
     }
 
     public boolean passwordIsValid(final String password) {
-        return  password.length() >= 6;
+        return  password.length() >= MAX_PASSWORD_SIZE_ALLOWED;
     }
-
-
 }

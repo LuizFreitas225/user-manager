@@ -1,9 +1,8 @@
-package br.com.atech.usermanager.api.dto;
+package br.com.atech.usermanager.dto;
 
 import br.com.atech.usermanager.constant.ErrorCode;
-import br.com.atech.usermanager.domain.model.Status;
+import br.com.atech.usermanager.model.Status;
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

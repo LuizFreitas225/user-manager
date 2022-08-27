@@ -1,4 +1,4 @@
-package br.com.atech.usermanager.domain.model;
+package br.com.atech.usermanager.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,6 +28,5 @@ public class DefaultEntity {
     private LocalDateTime createDate;
 
     @LastModifiedDate
-    private LocalDateTime LastModifiedDate;
-
+    private LocalDateTime lastModifiedDate;
 }

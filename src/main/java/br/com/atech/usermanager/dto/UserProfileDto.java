@@ -1,4 +1,4 @@
-package br.com.atech.usermanager.api.dto;
+package br.com.atech.usermanager.dto;
 
 import lombok.Data;
 
