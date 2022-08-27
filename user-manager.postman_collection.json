@@ -1,0 +1,138 @@
+{
+	"info": {
+		"_postman_id": "0191eb4a-0d62-4c6b-aedb-b21b312db9a0",
+		"name": "user-manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19407716"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Luiz Nicolau\",\r\n    \"email\": \"luizs@atech.com.br\",\r\n    \"password\": \"senha1\",\r\n    \"userName\": \"Luiz225\",\r\n    \"status\": \"ACTIVE\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"id\": 1,\r\n    \"name\": \"Luiz Freitas\",\r\n    \"email\": \"luizfreitas@atech.com.br\",\r\n    \"password\": \"senha2\",\r\n    \"userName\": \"Luiz226\",\r\n    \"status\": \"ACTIVE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Paginated Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user?orderBy=id&sort=desc&size=10&searchTerm=u",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "orderBy",
+									"value": "id"
+								},
+								{
+									"key": "sort",
+									"value": "desc"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "searchTerm",
+									"value": "u"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
