@@ -76,6 +76,9 @@ public class UserService {
         if(!passwordIsValid(user.getPassword())){
             throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
         }
+        if(user.getStatus() == Status.DELETED){
+            throw  new BadRequestException(ErrorCode.DELETED_STATUS );
+        }
     }
     public boolean emailInUse(final String email) {
         return  userRepository.findByEmail(email).isPresent();
