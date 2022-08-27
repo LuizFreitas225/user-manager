@@ -11,9 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.awt.print.Pageable;
 
 @Slf4j
 @Service
@@ -68,28 +71,37 @@ public class UserService {
         return userCreated;
     }
 
+    public Page<User> findAByNameOrEmailOrUserName(PageRequest pageRequest, String searchTerm) {
+        log.info("UserService.findAByNameOrEmailOrUserName - start - input [{}]", searchTerm);
+        Page<User> userPage = userRepository.findAByNameOrEmailOrUserName(pageRequest, searchTerm);
+        log.info("UserService.findAByNameOrEmailOrUserName - end - output [{}]", userPage.getTotalElements());
+        return userPage;
+    }
+
     public void validateCreateUser(User user ){
         log.info("UserService.validateUser - start - input [{}]", user.getEmail());
+        if(validateDeletedUser(user)){
+            throw  new BadRequestException(ErrorCode.DELETED_STATUS );
+        }
         if(emailInUse(user.getEmail())){
             throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
         }
         if(!passwordIsValid(user.getPassword())){
             throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
         }
-        if(validateDeletedUser(user)){
-            throw  new BadRequestException(ErrorCode.DELETED_STATUS );
-        }
     }
     public void validateEditUser(User currentUser, User newUser ){
-        log.info("UserService.validateUser - start - input [{}]", currentUser.getEmail(),newUser.getEmail());
-        if( ! currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())){
-            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
-        }
-        if( ! currentUser.getPassword().equals(newUser.getPassword()) && ! passwordIsValid(newUser.getPassword())){
-            throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
-        }
+        log.info("UserService.validateEditUser - start - input [{}]", currentUser.getEmail(),newUser.getEmail());
         if(validateDeletedUser(currentUser)){
             throw  new BadRequestException(ErrorCode.DELETED_STATUS );
+        }
+
+        if(! passwordIsValid(newUser.getPassword())){
+            throw  new BadRequestException(ErrorCode.SHORT_PASSWORD );
+        }
+
+        if( ! currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())){
+            throw  new BadRequestException(ErrorCode.EMAIL_IN_USE);
         }
     }
     public boolean validateDeletedUser (User user){

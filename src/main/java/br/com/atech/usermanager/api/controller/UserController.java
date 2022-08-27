@@ -5,9 +5,11 @@ import br.com.atech.usermanager.api.dto.EditUserDto;
 import br.com.atech.usermanager.api.dto.UserProfileDto;
 import br.com.atech.usermanager.domain.model.User;
 import br.com.atech.usermanager.service.UserService;
+import br.com.atech.usermanager.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +31,7 @@ public class UserController {
 
         User userCreated = userService.create(createUserDto);
 
-        log.info("ProductController.create - end - outPut  [{}]", userCreated.getId());
+        log.info("UserController.create - end - outPut  [{}]", userCreated.getId());
         return new ResponseEntity<>(modelMapper.map(userCreated, UserProfileDto.class), HttpStatus.CREATED);
     }
     @GetMapping( "/{id}")
@@ -50,8 +52,21 @@ public class UserController {
 
         User userCreated = userService.replace(editUserDto);
 
-        log.info("ProductController.edit - end - outPut  [{},{}]", userCreated.getEmail(), userCreated.getId());
+        log.info("UserController.edit - end - outPut  [{},{}]", userCreated.getEmail(), userCreated.getId());
         return new ResponseEntity<>(modelMapper.map(userCreated, UserProfileDto.class), HttpStatus.OK);
     }
+
+    @GetMapping
+    public Page<User> search(@RequestParam(value = "page", required = false) final Integer page,
+                             @RequestParam(value = "size", required = false) final Integer size,
+                             @RequestParam(value = "sort", required = false) final String sort,
+                             @RequestParam(value = "orderBy", required = false) final String orderBy,
+                             @RequestParam(value = "searchTerm", required = false, defaultValue = "") final String searchTerm) {
+
+        log.info("UserController.search - start - input  [{},{},{},{}]", page, size, sort, searchTerm);
+
+        return userService.findAByNameOrEmailOrUserName(PaginationUtil.configuringPageable(page, size, sort, orderBy), searchTerm);
+    }
+
 
 }
