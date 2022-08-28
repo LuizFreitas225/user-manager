@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmail(String email);
 
+    User findByEmail(String email);
+
     @Query(value = " SELECT p FROM User p "
             + " WHERE LOWER (p.name ) LIKE %:searchTerm% "
             + " OR LOWER (p.email) LIKE %:searchTerm% "

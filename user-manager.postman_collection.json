@@ -12,11 +12,14 @@
 				{
 					"name": "Create",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Luiz Nicolau\",\r\n    \"email\": \"luizs@atech.com.br\",\r\n    \"password\": \"senha1\",\r\n    \"userName\": \"Luiz225\",\r\n    \"status\": \"ACTIVE\"\r\n}\r\n\r\n",
+							"raw": "{\r\n    \"name\": \"Luiz Nicolauu\",\r\n    \"email\": \"luiz@atechh.com.br\",\r\n    \"password\": \"senha11\",\r\n    \"userName\": \"Luiz2255\",\r\n    \"status\": \"ACTIVE\"\r\n}\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,12 +27,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/user",
+							"raw": "{{base_url}}/user/",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"user"
+								"user",
+								""
 							]
 						}
 					},
@@ -38,6 +42,16 @@
 				{
 					"name": "Get Profile By Id",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -54,8 +68,18 @@
 					"response": []
 				},
 				{
-					"name": "delete",
+					"name": "Delete",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -72,13 +96,23 @@
 					"response": []
 				},
 				{
-					"name": "edit",
+					"name": "Edit",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{   \"id\": 1,\r\n    \"name\": \"Luiz Freitas\",\r\n    \"email\": \"luizfreitas@atech.com.br\",\r\n    \"password\": \"senha2\",\r\n    \"userName\": \"Luiz226\",\r\n    \"status\": \"ACTIVE\"\r\n}",
+							"raw": "{   \"id\": 1,\r\n    \"name\": \"Luiz Freitas\",\r\n    \"email\": \"luizfreitas@atech.com.br\",\r\n    \"password\": \"senha2\",\r\n    \"userName\": \"Luiz226\",\r\n    \"status\": \"INACTIVE\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -100,15 +134,26 @@
 				{
 					"name": "Paginated Search",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/user?orderBy=id&sort=desc&size=10&searchTerm=u",
+							"raw": "{{base_url}}/user/?orderBy=id&sort=asc&size=10&searchTerm=",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"user"
+								"user",
+								""
 							],
 							"query": [
 								{
@@ -117,7 +162,7 @@
 								},
 								{
 									"key": "sort",
-									"value": "desc"
+									"value": "asc"
 								},
 								{
 									"key": "size",
@@ -125,7 +170,73 @@
 								},
 								{
 									"key": "searchTerm",
-									"value": "u"
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Authentication",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "secret-id",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "client-id",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{base_url}}/oauth/token?grant_type=password&username=luiz@atech.com.br&password=senha1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "username",
+									"value": "luiz@atech.com.br"
+								},
+								{
+									"key": "password",
+									"value": "senha1"
 								}
 							]
 						}
