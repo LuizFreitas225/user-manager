@@ -1,6 +1,6 @@
 package br.com.atech.usermanager.constant;
 
-public final class ErrorCode {
+public final class ErrorMessage {
     public  static final String USER_NOT_FOUND = "User Not Found";
     public  static final String NAME_IS_MANDATORY = "Name is mandatory";
     public  static final String EMAIL_IS_MANDATORY = "Email is mandatory";

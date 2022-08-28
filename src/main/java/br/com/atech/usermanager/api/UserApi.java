@@ -26,7 +26,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/user")
+@RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserApi {
     private  final UserService userService;
@@ -37,7 +37,8 @@ public class UserApi {
     public ResponseEntity<UserProfileDto> create(@RequestBody @Valid CreateUserDto createUserDto) {
         log.info("UserController.create - start - input  [{}]", createUserDto.getEmail());
 
-        User userCreated = userService.create(createUserDto);
+        User user = modelMapper.map(createUserDto, User.class);
+        User userCreated = userService.create(user);
 
         log.info("UserController.create - end - outPut  [{}]", userCreated.getId());
         return new ResponseEntity<>(modelMapper.map(userCreated, UserProfileDto.class), HttpStatus.CREATED);
@@ -58,7 +59,8 @@ public class UserApi {
     public ResponseEntity<UserProfileDto> edit(@RequestBody @Valid EditUserDto editUserDto) {
         log.info("UserController.edit - start - input  [{},{}]", editUserDto.getEmail(), editUserDto.getId());
 
-        User userCreated = userService.replace(editUserDto);
+        User user = modelMapper.map(editUserDto, User.class);
+        User userCreated = userService.update(user);
 
         log.info("UserController.edit - end - outPut  [{},{}]", userCreated.getEmail(), userCreated.getId());
         return new ResponseEntity<>(modelMapper.map(userCreated, UserProfileDto.class), HttpStatus.OK);

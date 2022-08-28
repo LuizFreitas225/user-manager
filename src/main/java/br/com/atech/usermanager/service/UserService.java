@@ -1,8 +1,6 @@
 package br.com.atech.usermanager.service;
 
-import br.com.atech.usermanager.dto.CreateUserDto;
-import br.com.atech.usermanager.dto.EditUserDto;
-import br.com.atech.usermanager.constant.ErrorCode;
+import br.com.atech.usermanager.constant.ErrorMessage;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
 import br.com.atech.usermanager.exception.UserIsInactive;
 import br.com.atech.usermanager.model.Status;
@@ -31,15 +29,14 @@ public class UserService {
     private static final int MAX_PASSWORD_SIZE_ALLOWED = 6;
 
     @Transactional
-    public User create(final CreateUserDto createUserDto) {
-        log.info("UserService.create - start - input  [{}]", createUserDto.getEmail());
+    public User create(final User user) {
+        log.info("UserService.create - start - input  [{}]", user.getEmail());
 
-        User user = modelMapper.map(createUserDto, User.class);
         validateCreateUser(user);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         User userCreated = userRepository.save(user);
 
-        log.info("UserService.create - end- output [{}]", createUserDto.getEmail());
+        log.info("UserService.create - end- output [{}]", user.getEmail());
         return userCreated;
     }
 
@@ -47,7 +44,7 @@ public class UserService {
         log.info("UserService.findAndValidateById - start - input [{}]", id);
 
         User userFound = userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.USER_NOT_FOUND));
 
         log.info("UserService.findAndValidateById - end - output [{}]", userFound.getId());
         return userFound;
@@ -63,17 +60,16 @@ public class UserService {
     }
 
     @Transactional
-    public User replace(final EditUserDto editUserDto) {
-        log.info("UserService.replace - start - input  [{},{}]", editUserDto.getEmail(), editUserDto.getId());
+    public User update(final User user) {
+        log.info("UserService.update - start - input  [{},{}]", user.getEmail(), user.getId());
 
-        User user = modelMapper.map(editUserDto, User.class);
         User currentUser = findAndValidateById(user.getId());
         user.setCreateDate(currentUser.getCreateDate());
         validateEditUser(currentUser, user);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         User userCreated = userRepository.save(user);
 
-        log.info("UserService.replace - end- output [{},{}]", userCreated.getEmail(), userCreated.getId());
+        log.info("UserService.update - end- output [{},{}]", userCreated.getEmail(), userCreated.getId());
         return userCreated;
     }
 
@@ -100,27 +96,27 @@ public class UserService {
     public void validateCreateUser(User user) {
         log.info("UserService.validateUser - start - input [{}]", user.getEmail());
         if (validateDeletedUser(user)) {
-            throw new BadRequestException(ErrorCode.DELETED_STATUS);
+            throw new BadRequestException(ErrorMessage.DELETED_STATUS);
         }
         if (emailInUse(user.getEmail())) {
-            throw new BadRequestException(ErrorCode.EMAIL_IN_USE);
+            throw new BadRequestException(ErrorMessage.EMAIL_IN_USE);
         }
         if (!passwordIsValid(user.getPassword())) {
-            throw new BadRequestException(ErrorCode.SHORT_PASSWORD);
+            throw new BadRequestException(ErrorMessage.SHORT_PASSWORD);
         }
     }
     public void validateEditUser(User currentUser, User newUser) {
         log.info("UserService.validateEditUser - start - input [{}]", currentUser.getEmail(), newUser.getEmail());
         if (validateDeletedUser(currentUser)) {
-            throw new BadRequestException(ErrorCode.DELETED_STATUS);
+            throw new BadRequestException(ErrorMessage.DELETED_STATUS);
         }
 
         if (!passwordIsValid(newUser.getPassword())) {
-            throw new BadRequestException(ErrorCode.SHORT_PASSWORD);
+            throw new BadRequestException(ErrorMessage.SHORT_PASSWORD);
         }
 
         if (!currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())) {
-            throw new BadRequestException(ErrorCode.EMAIL_IN_USE);
+            throw new BadRequestException(ErrorMessage.EMAIL_IN_USE);
         }
     }
     public boolean validateDeletedUser(User user) {
