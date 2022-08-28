@@ -12,4 +12,5 @@ public final class ErrorMessage {
     public static final String EMAIL_IN_USE = "Email in use";
     public static final String SHORT_PASSWORD = "Password must be at least 6 characters long";
     public static final String DELETED_STATUS = "This action cannot be performed, this user has DELETED status.";
+    public static final String INACTIVE_STATUS = "This action cannot be performed, this user has INACTIVE status.";
 }

@@ -1,12 +1,13 @@
 package br.com.atech.usermanager.service;
 
-import br.com.atech.usermanager.constant.ErrorMessage;
+import br.com.atech.usermanager.exception.EmailInUseException;
+import br.com.atech.usermanager.exception.ShortPasswordException;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
 import br.com.atech.usermanager.exception.UserIsInactive;
+import br.com.atech.usermanager.exception.UserNotFoundException;
 import br.com.atech.usermanager.model.Status;
 import br.com.atech.usermanager.model.User;
 import br.com.atech.usermanager.repository.UserRepository;
-import br.com.atech.usermanager.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +45,7 @@ public class UserService {
         log.info("UserService.findAndValidateById - start - input [{}]", id);
 
         User userFound = userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException());
 
         log.info("UserService.findAndValidateById - end - output [{}]", userFound.getId());
         return userFound;
@@ -96,27 +97,27 @@ public class UserService {
     public void validateCreateUser(User user) {
         log.info("UserService.validateUser - start - input [{}]", user.getEmail());
         if (validateDeletedUser(user)) {
-            throw new BadRequestException(ErrorMessage.DELETED_STATUS);
-        }
-        if (emailInUse(user.getEmail())) {
-            throw new BadRequestException(ErrorMessage.EMAIL_IN_USE);
+            throw new UserIsDeletedException();
         }
         if (!passwordIsValid(user.getPassword())) {
-            throw new BadRequestException(ErrorMessage.SHORT_PASSWORD);
+            throw new ShortPasswordException();
+        }
+        if (emailInUse(user.getEmail())) {
+            throw new EmailInUseException();
         }
     }
     public void validateEditUser(User currentUser, User newUser) {
         log.info("UserService.validateEditUser - start - input [{}]", currentUser.getEmail(), newUser.getEmail());
         if (validateDeletedUser(currentUser)) {
-            throw new BadRequestException(ErrorMessage.DELETED_STATUS);
+            throw new UserIsDeletedException();
         }
 
         if (!passwordIsValid(newUser.getPassword())) {
-            throw new BadRequestException(ErrorMessage.SHORT_PASSWORD);
+            throw new ShortPasswordException();
         }
 
         if (!currentUser.getEmail().equals(newUser.getEmail()) && emailInUse(newUser.getEmail())) {
-            throw new BadRequestException(ErrorMessage.EMAIL_IN_USE);
+            throw new EmailInUseException();
         }
     }
     public boolean validateDeletedUser(User user) {
