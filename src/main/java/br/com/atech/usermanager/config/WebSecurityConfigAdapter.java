@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfigAdapter extends WebSecurityConfigurerAdapter {
 
-
     @Autowired
     public void authenticationManager(AuthenticationManagerBuilder builder, UserService userService) throws Exception {
 
@@ -29,34 +28,6 @@ public class WebSecurityConfigAdapter extends WebSecurityConfigurerAdapter {
         return authenticationManagerBean();
     }
 
-
-
-
-
-
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .withUser("admin").password("admin").roles("ROLE");
-//    }
-//
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .anyRequest().hasRole("ROLE")
-//                .and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .csrf().disable();
-//    }
-//
-//    @Bean
-//    public List<AuthorizationServerConfigurer> listBean(){
-//        return Collections.emptyList();
-//    }
-//
-//
-//
     @Bean
     public static BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
