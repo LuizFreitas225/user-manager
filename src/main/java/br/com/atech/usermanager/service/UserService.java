@@ -3,6 +3,8 @@ package br.com.atech.usermanager.service;
 import br.com.atech.usermanager.dto.CreateUserDto;
 import br.com.atech.usermanager.dto.EditUserDto;
 import br.com.atech.usermanager.constant.ErrorCode;
+import br.com.atech.usermanager.exception.UserIsDeletedException;
+import br.com.atech.usermanager.exception.UserIsInactive;
 import br.com.atech.usermanager.model.Status;
 import br.com.atech.usermanager.model.User;
 import br.com.atech.usermanager.repository.UserRepository;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,6 +36,7 @@ public class UserService {
 
         User user = modelMapper.map(createUserDto, User.class);
         validateCreateUser(user);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         User userCreated = userRepository.save(user);
 
         log.info("UserService.create - end- output [{}]", createUserDto.getEmail());
@@ -66,6 +70,7 @@ public class UserService {
         User currentUser = findAndValidateById(user.getId());
         user.setCreateDate(currentUser.getCreateDate());
         validateEditUser(currentUser, user);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         User userCreated = userRepository.save(user);
 
         log.info("UserService.replace - end- output [{},{}]", userCreated.getEmail(), userCreated.getId());
@@ -77,6 +82,19 @@ public class UserService {
         Page<User> userPage = userRepository.findAByNameOrEmailOrUserName(pageRequest, searchTerm);
         log.info("UserService.findAByNameOrEmailOrUserName - end - output [{}]", userPage.getTotalElements());
         return userPage;
+    }
+    public User findValidUserByEmail(String email) {
+        log.info("UserService.findByEmail - start - input [{}]", email);
+        User user = userRepository.findByEmail(email);
+
+        if (user.getStatus() == Status.DELETED) {
+           throw new UserIsDeletedException();
+        }
+
+        if (user.getStatus() == Status.INACTIVE) {
+            throw new UserIsInactive();
+        }
+        return user;
     }
 
     public void validateCreateUser(User user) {
