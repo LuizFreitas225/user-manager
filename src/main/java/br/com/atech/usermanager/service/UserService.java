@@ -1,7 +1,5 @@
 package br.com.atech.usermanager.service;
 
-import br.com.atech.usermanager.dto.CreateUserDto;
-import br.com.atech.usermanager.dto.EditUserDto;
 import br.com.atech.usermanager.constant.ErrorMessage;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
 import br.com.atech.usermanager.exception.UserIsInactive;
@@ -31,15 +29,14 @@ public class UserService {
     private static final int MAX_PASSWORD_SIZE_ALLOWED = 6;
 
     @Transactional
-    public User create(final CreateUserDto createUserDto) {
-        log.info("UserService.create - start - input  [{}]", createUserDto.getEmail());
+    public User create(final User user) {
+        log.info("UserService.create - start - input  [{}]", user.getEmail());
 
-        User user = modelMapper.map(createUserDto, User.class);
         validateCreateUser(user);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         User userCreated = userRepository.save(user);
 
-        log.info("UserService.create - end- output [{}]", createUserDto.getEmail());
+        log.info("UserService.create - end- output [{}]", user.getEmail());
         return userCreated;
     }
 
@@ -63,10 +60,9 @@ public class UserService {
     }
 
     @Transactional
-    public User update(final EditUserDto editUserDto) {
-        log.info("UserService.update - start - input  [{},{}]", editUserDto.getEmail(), editUserDto.getId());
+    public User update(final User user) {
+        log.info("UserService.update - start - input  [{},{}]", user.getEmail(), user.getId());
 
-        User user = modelMapper.map(editUserDto, User.class);
         User currentUser = findAndValidateById(user.getId());
         user.setCreateDate(currentUser.getCreateDate());
         validateEditUser(currentUser, user);
