@@ -19,12 +19,11 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 @Data
 public class User {
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

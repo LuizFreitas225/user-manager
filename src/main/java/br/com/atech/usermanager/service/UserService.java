@@ -3,7 +3,7 @@ package br.com.atech.usermanager.service;
 import br.com.atech.usermanager.exception.EmailInUseException;
 import br.com.atech.usermanager.exception.ShortPasswordException;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
-import br.com.atech.usermanager.exception.UserIsInactive;
+import br.com.atech.usermanager.exception.UserIsInactiveException;
 import br.com.atech.usermanager.exception.UserNotFoundException;
 import br.com.atech.usermanager.model.Status;
 import br.com.atech.usermanager.model.User;
@@ -11,13 +11,10 @@ import br.com.atech.usermanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Slf4j
 @Service
@@ -25,11 +22,8 @@ import javax.transaction.Transactional;
 public class UserService {
     private final UserRepository userRepository;
 
-    private final ModelMapper modelMapper;
-
     private static final int MAX_PASSWORD_SIZE_ALLOWED = 6;
 
-    @Transactional
     public User create(final User user) {
         log.info("UserService.create - start - input  [{}]", user.getEmail());
 
@@ -51,7 +45,6 @@ public class UserService {
         return userFound;
     }
 
-    @Transactional
     public void delete(final long id) {
         log.info("UserService.findAndValidateById - start - input [{}]", id);
 
@@ -60,11 +53,10 @@ public class UserService {
         userRepository.save(userFound);
     }
 
-    @Transactional
     public User update(final User user) {
         log.info("UserService.update - start - input  [{},{}]", user.getEmail(), user.getId());
 
-        User currentUser = findAndValidateById(user.getId());
+        User currentUser = this.findAndValidateById(user.getId());
         user.setCreateDate(currentUser.getCreateDate());
         validateEditUser(currentUser, user);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -89,7 +81,7 @@ public class UserService {
         }
 
         if (user.getStatus() == Status.INACTIVE) {
-            throw new UserIsInactive();
+            throw new UserIsInactiveException();
         }
         return user;
     }
