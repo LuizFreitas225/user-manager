@@ -6,7 +6,7 @@ import br.com.atech.usermanager.model.User;
 import java.time.LocalDateTime;
 
 public final class UserMockUtil {
-    public  static User getUserWithoutId(){
+    public  static User getUserWithId(){
         User user = new User();
         user.setId((long) 1);
         user.setName("Luiz");
@@ -20,7 +20,7 @@ public final class UserMockUtil {
         return user;
     }
 
-    public  static User getUserWithId(){
+    public  static User getUserWithoutId(){
         User user = new User();
         user.setName("Luiz");
         user.setPassword("senha1");

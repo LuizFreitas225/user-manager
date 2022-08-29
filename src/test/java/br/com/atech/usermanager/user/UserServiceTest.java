@@ -1,5 +1,6 @@
 package br.com.atech.usermanager.user;
 
+import br.com.atech.usermanager.exception.EmailInUseException;
 import br.com.atech.usermanager.exception.ShortPasswordException;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
 import br.com.atech.usermanager.exception.UserIsInactiveException;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
@@ -42,7 +44,6 @@ public class UserServiceTest {
         incompleteUser = UserMockUtil.getUserWithoutId();
     }
 
-
     @Test
     void create_doNotCreateIfStatusIsDeleted() {
         fullUser.setStatus(Status.DELETED);
@@ -52,6 +53,7 @@ public class UserServiceTest {
 
         Assertions.assertThatThrownBy(() -> userService.create(incompleteUser)).isInstanceOf(UserIsDeletedException.class);
     }
+
     @Test
     void create_doNotCreateIfPasswordIsShort() {
         fullUser.setPassword("senha");
@@ -62,6 +64,14 @@ public class UserServiceTest {
         Assertions.assertThatThrownBy(() -> userService.create(incompleteUser)).isInstanceOf(ShortPasswordException.class);
     }
 
+    @Test
+    void create_doNotCreateIfEmailIsInUse() {
+
+        BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(fullUser);
+        BDDMockito.when(userRepository.existsByEmail(ArgumentMatchers.any(String.class))).thenReturn(true);
+
+        Assertions.assertThatThrownBy(() -> userService.create(incompleteUser)).isInstanceOf(EmailInUseException.class);
+    }
 
     @Test
     void update_doNotCreateIfStatusIsDeleted() {
@@ -71,6 +81,7 @@ public class UserServiceTest {
 
         Assertions.assertThatThrownBy(() -> userService.create(fullUser)).isInstanceOf(UserIsDeletedException.class);
     }
+
     @Test
     void update_doNotCreateIfPasswordIsShort() {
         fullUser.setPassword("senha");
@@ -78,6 +89,16 @@ public class UserServiceTest {
         BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(fullUser);
 
         Assertions.assertThatThrownBy(() -> userService.create(fullUser)).isInstanceOf(ShortPasswordException.class);
+    }
+
+    @Test
+    void update_doNotCreateIfEmailIsInUse() {
+        incompleteUser.setEmail("atech@gmial.com.br");
+
+        BDDMockito.when(userRepository.findById(ArgumentMatchers.any(long.class))).thenReturn(Optional.of(fullUser));
+        BDDMockito.when(userRepository.existsByEmail(ArgumentMatchers.any(String.class))).thenReturn(true);
+        incompleteUser.setId(fullUser.getId());
+        Assertions.assertThatThrownBy(() -> userService.update(incompleteUser)).isInstanceOf(EmailInUseException.class);
     }
 
     @Test
@@ -118,6 +139,4 @@ public class UserServiceTest {
 
         Assertions.assertThatThrownBy(() -> userService.findValidUserByEmail("luiz@atech.com")).isInstanceOf(UserIsInactiveException.class);
     }
-
-
 }

@@ -16,8 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,7 +24,6 @@ public class UserService {
 
     private static final int MAX_PASSWORD_SIZE_ALLOWED = 6;
 
-    @Transactional
     public User create(final User user) {
         log.info("UserService.create - start - input  [{}]", user.getEmail());
 
@@ -48,7 +45,6 @@ public class UserService {
         return userFound;
     }
 
-    @Transactional
     public void delete(final long id) {
         log.info("UserService.findAndValidateById - start - input [{}]", id);
 
@@ -57,11 +53,10 @@ public class UserService {
         userRepository.save(userFound);
     }
 
-    @Transactional
     public User update(final User user) {
         log.info("UserService.update - start - input  [{},{}]", user.getEmail(), user.getId());
 
-        User currentUser = findAndValidateById(user.getId());
+        User currentUser = this.findAndValidateById(user.getId());
         user.setCreateDate(currentUser.getCreateDate());
         validateEditUser(currentUser, user);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
