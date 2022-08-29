@@ -5,7 +5,7 @@ import br.com.atech.usermanager.exception.EmailInUseException;
 import br.com.atech.usermanager.exception.ExceptionDetails;
 import br.com.atech.usermanager.exception.ShortPasswordException;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
-import br.com.atech.usermanager.exception.UserIsInactive;
+import br.com.atech.usermanager.exception.UserIsInactiveException;
 import br.com.atech.usermanager.exception.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity(new ExceptionDetails(ErrorMessage.DELETED_STATUS, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserIsInactive.class)
+    @ExceptionHandler(UserIsInactiveException.class)
     public ResponseEntity<Object> userIsInactive(UserIsDeletedException exception) {
         return new ResponseEntity(new ExceptionDetails(ErrorMessage.INACTIVE_STATUS, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
     }

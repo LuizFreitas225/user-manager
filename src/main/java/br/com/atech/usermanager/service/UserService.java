@@ -3,7 +3,7 @@ package br.com.atech.usermanager.service;
 import br.com.atech.usermanager.exception.EmailInUseException;
 import br.com.atech.usermanager.exception.ShortPasswordException;
 import br.com.atech.usermanager.exception.UserIsDeletedException;
-import br.com.atech.usermanager.exception.UserIsInactive;
+import br.com.atech.usermanager.exception.UserIsInactiveException;
 import br.com.atech.usermanager.exception.UserNotFoundException;
 import br.com.atech.usermanager.model.Status;
 import br.com.atech.usermanager.model.User;
@@ -11,7 +11,6 @@ import br.com.atech.usermanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,8 +23,6 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    private final ModelMapper modelMapper;
 
     private static final int MAX_PASSWORD_SIZE_ALLOWED = 6;
 
@@ -89,7 +86,7 @@ public class UserService {
         }
 
         if (user.getStatus() == Status.INACTIVE) {
-            throw new UserIsInactive();
+            throw new UserIsInactiveException();
         }
         return user;
     }
