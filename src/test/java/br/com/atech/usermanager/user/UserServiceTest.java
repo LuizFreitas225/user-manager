@@ -78,8 +78,9 @@ public class UserServiceTest {
         fullUser.setStatus(Status.DELETED);
 
         BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(fullUser);
+        BDDMockito.when(userRepository.findByEmail((ArgumentMatchers.any(String.class)))).thenReturn(fullUser);
 
-        Assertions.assertThatThrownBy(() -> userService.create(fullUser)).isInstanceOf(UserIsDeletedException.class);
+        Assertions.assertThatThrownBy(() -> userService.update(fullUser)).isInstanceOf(UserIsDeletedException.class);
     }
 
     @Test
@@ -87,8 +88,9 @@ public class UserServiceTest {
         fullUser.setPassword("senha");
 
         BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(fullUser);
+        BDDMockito.when(userRepository.findByEmail((ArgumentMatchers.any(String.class)))).thenReturn(fullUser);
 
-        Assertions.assertThatThrownBy(() -> userService.create(fullUser)).isInstanceOf(ShortPasswordException.class);
+        Assertions.assertThatThrownBy(() -> userService.update(fullUser)).isInstanceOf(ShortPasswordException.class);
     }
 
     @Test

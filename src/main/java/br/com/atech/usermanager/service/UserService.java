@@ -56,7 +56,7 @@ public class UserService {
     public User update(final User user) {
         log.info("UserService.update - start - input  [{},{}]", user.getEmail(), user.getId());
 
-        User currentUser = this.findAndValidateById(user.getId());
+        User currentUser = this.findValidUserByEmail(user.getEmail());
         user.setCreateDate(currentUser.getCreateDate());
         validateEditUser(currentUser, user);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
